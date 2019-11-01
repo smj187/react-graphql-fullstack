@@ -1,0 +1,42 @@
+{
+	"name": "server",
+	"version": "1.0.0",
+	"description": "GraphQL Backend Server with Mongoose",
+	"main": "index.js",
+	"dependencies": {
+		"apollo-server": "^2.9.6",
+		"apollo-server-express": "^2.9.4",
+		"bcryptjs": "^2.4.3",
+		"body-parser": "^1.19.0",
+		"cloudinary": "^1.15.0",
+		"express": "^4.17.1",
+		"fast-stream-to-buffer": "^1.0.0",
+		"generate-password": "^1.4.2",
+		"graphql": "^14.5.6",
+		"graphql-iso-date": "^3.6.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.7.1",
+		"nodemailer": "^6.3.1",
+		"uuid": "^3.3.3",
+		"validator": "^11.1.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.6.0",
+		"@babel/node": "^7.6.1",
+		"@babel/preset-env": "^7.6.0",
+		"@babel/register": "^7.6.2",
+		"axios": "^0.19.0",
+		"chai": "^4.2.0",
+		"dotenv": "^8.2.0",
+		"mocha": "^6.2.1",
+		"nodemon": "^1.19.2"
+	},
+	"scripts": {
+		"start": "nodemon --exec babel-node src/server.js",
+		"test:server": "SET IS_TEST='true' && babel-node src/server.js",
+		"test": "mocha --require @babel/register --file src/tests/setup.js 'src/**/*.spec.js' --file src/tests/cleanup.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}
