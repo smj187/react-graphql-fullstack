@@ -39,6 +39,8 @@ import { Error } from "styled-icons/boxicons-solid/Error"
 import { FileVideo } from "styled-icons/fa-solid/FileVideo"
 import { FileAudio } from "styled-icons/fa-regular/FileAudio"
 import { File } from "styled-icons/boxicons-solid/File"
+import { FileImage } from "styled-icons/boxicons-solid/FileImage"
+import { Plus } from "styled-icons/octicons/Plus"
 
 // styled-icons/fa-regular/AddressCard
 
@@ -79,6 +81,8 @@ export const Icon = ({ name, size = 16, ...rest }) => (
 			(name === "FileVideo" && <FileVideo size={size} />) ||
 			(name === "File" && <File size={size} />) ||
 			(name === "FileAudio" && <FileAudio size={size} />) ||
+			(name === "FileImage" && <FileImage size={size} />) ||
+			(name === "Plus" && <Plus size={size} />) ||
 			(name === "SignInAlt" && <SignInAlt size={size} />)}
 	</Container>
 )

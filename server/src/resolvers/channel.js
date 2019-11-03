@@ -29,13 +29,8 @@ export default {
 				}
 			}
 			return await Promise.all(channels.map(channel => asyncFunc(channel))).then(data => {
-				// console.log("data", data)
 				return data
 			})
-			console.log(test)
-
-			console.timeEnd()
-			return test
 		},
 		privateChannels: async (parent, args, { user }, info) => {
 			return await Channel.find({ users: { $in: [user.id] } })

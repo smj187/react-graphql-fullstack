@@ -5,7 +5,7 @@ const messageSchema = new Schema(
 		channelId: { type: Schema.Types.ObjectId, ref: "Channel" },
 		content: { type: String, default: null },
 		tags: { type: [String], default: null },
-		file: { type: String },
+		file: { url: { type: String }, format: { type: String } },
 		heart: { counter: { type: Number, default: 0 }, users: { type: [String], default: [] } },
 		up: { counter: { type: Number, default: 0 }, users: { type: [String], default: [] } },
 		down: { counter: { type: Number, default: 0 }, users: { type: [String], default: [] } },

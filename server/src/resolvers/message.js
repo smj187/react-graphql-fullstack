@@ -12,7 +12,7 @@ export default {
 				.limit(pageSize)
 
 			return messages.map(message => {
-				if (message._doc.tags.length === 0) delete message._doc.tags
+				if (message._doc.tags && message._doc.tags.length === 0) delete message._doc.tags
 				if (message._doc.heart.counter === 0) delete message._doc.heart
 				if (message._doc.up.counter === 0) delete message._doc.up
 				if (message._doc.down.counter === 0) delete message._doc.down
@@ -42,10 +42,13 @@ export default {
 			// create the message
 			const createdBy = user.id
 			let file = null
+
 			if (stream) {
 				console.log("stream")
-
-				file = await upload(stream, "messages/", type)
+				file = {
+					url: await upload(stream, "messages/", type),
+					format: type
+				}
 			}
 			const create = { channelId: id, content, tags, file, createdBy }
 			Object.keys(create).forEach(key => create[key] == null && delete create[key])
@@ -53,7 +56,6 @@ export default {
 
 			// push message to channel
 			const channelQuery = { _id: id }
-			// const push = { $push: { messages: message } }
 			const push = { $set: { messages: message } }
 			const options = { new: true, useFindAndModify: false }
 			Channel.findByIdAndUpdate(channelQuery, push, options).exec()
@@ -73,28 +75,30 @@ export default {
 			console.timeEnd()
 			return message
 		},
-		updateMessage: async (parent, { messageId, content, tags, file }, { user }, info) => {
+		updateMessage: async (parent, { id, content, tags, file }, { user }, info) => {
 			const updatedBy = user.id
 			const updatedAt = Date.now()
+			console.log("update,", id, content, tags, file)
 
-			const query = { _id: messageId }
+			const query = { _id: id }
 			const update = { $set: { content, tags, file, updatedBy, updatedAt } }
 			const options = { new: true, useFindAndModify: false }
-			return await Message.findByIdAndUpdate(query, update, options)
+			await Message.findByIdAndUpdate(query, update, options)
+			return true
 		},
 
-		reactToMessage: async (parent, { messageId, reaction }, { user }, info) => {
-			const message = await Message.findById(messageId)
+		reactToMessage: async (parent, { id, reaction }, { user }, info) => {
+			const message = await Message.findById(id)
 
 			const addReaction = async (inc, push) => {
-				const query = { _id: messageId }
+				const query = { _id: id }
 				const update = { $inc: inc, $push: push }
 				const options = { new: true, useFindAndModify: false }
 				return await Message.findByIdAndUpdate(query, update, options)
 			}
 
 			const removeReaction = async (dec, pull) => {
-				const query = { _id: messageId }
+				const query = { _id: id }
 				const update = {
 					$inc: dec,
 					$pull: pull

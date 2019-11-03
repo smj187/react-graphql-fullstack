@@ -1,7 +1,7 @@
 import React, { useState, useContext, createContext } from "react"
-import { useQuery, useMutation } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/react-hooks"
 
-import { SIGN_IN_USER, SIGN_UP_USER, RESET_PASSWORD_MAIL, GET_USER } from "../graphql"
+import { SIGN_IN_USER, SIGN_UP_USER, RESET_PASSWORD_MAIL } from "../graphql"
 
 import jwt from "jsonwebtoken"
 

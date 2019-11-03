@@ -2,12 +2,13 @@ import React, { useState } from "react"
 import Moment from "react-moment"
 
 import { useChat } from "../../../hooks"
-import { Span, Avatar, Search, Icon, Button, Confirm } from "../../../components"
-import { ChatInput, StyledTextarea } from "../../../components"
-import { Container, Navbar, ChatWindow, Empty, Image, Message, StyledIcon } from "./styles"
-import { MetaWrapper, TagWrapper, Tag, EditMenu, FileWrapper } from "./styles"
+import { Span, Avatar, Search, Icon, Confirm, Tooltip } from "../../../components"
+import { ChatInput, EditMessage, Profile } from "../../../components"
+import { Container, Navbar, ChatWindow, Empty, EmptyImage, Message, StyledIcon } from "./styles"
+import { MetaWrapper, TagWrapper, Tag, FileWrapper, Updated, Image, Video } from "./styles"
+import { Audio, Document } from "./styles"
 
-import EmptyImage from "../../../assets/2.png"
+import EmptyImagePicture from "../../../assets/2.png"
 
 export const Channel = () => {
 	const [state, setState] = useState({
@@ -15,17 +16,17 @@ export const Channel = () => {
 		selectedId: -1,
 		height: 41,
 		showConfirmModal: false,
-		showErrorModal: true
+		showErrorModal: false,
+		showEditModal: false,
+		showUserModal: false,
+		selectedUserId: -1
 	})
 
-	const { channel, messages, deleteMessage } = useChat()
+	const { channel, messages, deleteMessage, editMessage, setEditMessage } = useChat()
 
 	// TODO: pagination
 	// TODO: subscriptions
-	// TODO: update message
 	// TODO: private messages
-	// TODO: corret file representation for image, video, audio and else
-	// TODO: update most recent message in channel selection
 
 	return (
 		<Container>
@@ -51,59 +52,107 @@ export const Channel = () => {
 			</Navbar>
 			<ChatWindow height={state.height}>
 				{messages.map((message, index) => (
-					<Message key={index} isEditing={state.selectedId === message.id}>
+					<Message
+						key={index}
+						isFirst={index === 0 && messages.length === 1}
+						isLast={index === messages.length - 1}
+					>
 						<div>
-							<Avatar name={message.createdBy.username} size="55" />
+							<Avatar
+								name={message.createdBy.username}
+								size="55"
+								onClick={() => {
+									setState({
+										...state,
+										showUserModal: true,
+										selectedUserId: message.createdBy.id
+									})
+								}}
+							/>
 						</div>
-
 						<MetaWrapper>
-							<Span>{message.createdBy.username} </Span>
+							<Span
+								onClick={() => {
+									setState({
+										...state,
+										showUserModal: true,
+										selectedUserId: message.createdBy.id
+									})
+								}}
+							>
+								{message.createdBy.username}{" "}
+							</Span>
 							<Span>
 								<Moment fromNow>{message.createdAt}</Moment>
 							</Span>
 						</MetaWrapper>
-
 						<StyledIcon
 							name="MoreVert"
 							size="24"
 							onClick={() => {
-								setState({
-									...state,
-									selectedId: state.selectedId !== message.id ? message.id : null
-								})
+								setEditMessage(message)
+								setState({ ...state, showEditModal: true })
 							}}
 						/>
-
-						<Span>{message.content}</Span>
-
+						<Span>
+							{message.content}
+							{message.updatedAt && (
+								<Tooltip
+									content={new Date(message.updatedAt).toLocaleString()}
+									render={<Updated>(updated)</Updated>}
+								/>
+							)}
+						</Span>
 						{message.tags && (
-							<TagWrapper isEditing={state.selectedId === message.id}>
+							<TagWrapper>
 								{message.tags.map((tag, index) => (
-									<Tag key={index} isEditing={state.selectedId === message.id}>
+									<Tag key={index}>
 										<Span>{tag}</Span>
-										<Icon name="Close" size="24" />
 									</Tag>
 								))}
 							</TagWrapper>
 						)}
 
-						{state.selectedId === message.id && (
-							<EditMenu>
-								<Button
-									delete2
-									onClick={() => setState({ ...state, showConfirmModal: true })}
-								>
-									Delete
-								</Button>
-								<Button flat>Abort</Button>
-								<Button>Save</Button>
-							</EditMenu>
+						{message.file && message.file.url && (
+							<FileWrapper
+								isVideo={message.file.format.includes("video")}
+								isAudio={message.file.format.includes("audio")}
+							>
+								{message.file.format === "image" && (
+									<Image
+										src={message.file.url}
+										alt="message image"
+										onClick={() => window.open(message.file.url, "_blank")}
+									/>
+								)}
+								{message.file.format === "video" && (
+									<Video width="320" height="240" controls>
+										<source src={message.file.url} />
+										Your browser does not support the video tag.
+									</Video>
+								)}
+								{message.file.format === "audio" && (
+									<Audio controls>
+										<source src={message.file.url} />
+										Your browser does not support the audio tag.
+									</Audio>
+								)}
+								{message.file.format === "document" && (
+									<Document>
+										<Icon
+											name="File"
+											size="52"
+											onClick={() => window.open(message.file.url, "_blank")}
+										/>
+									</Document>
+								)}
+							</FileWrapper>
 						)}
 					</Message>
 				))}
-				{channel.id !== null && messages.length == 0 && (
+				{channel.id !== null && messages.length === 0 && (
 					<Empty visible={() => setTimeout(() => true, 2000)}>
-						<Image src={EmptyImage} />
+						<EmptyImage src={EmptyImagePicture} />
 						<Span>No conversation yet...</Span>
 					</Empty>
 				)}
@@ -117,6 +166,17 @@ export const Channel = () => {
 				isOpen={state.showConfirmModal}
 				onClose={() => setState({ ...state, showConfirmModal: false })}
 				onSuccess={() => deleteMessage(state.selectedId)}
+			/>
+			<EditMessage
+				message={editMessage}
+				isOpen={state.showEditModal}
+				onClose={() => setState({ ...state, showEditModal: false })}
+			/>
+
+			<Profile
+				userId={state.selectedUserId}
+				isOpen={state.showUserModal}
+				onClose={() => setState({ ...state, showUserModal: false })}
 			/>
 		</Container>
 	)

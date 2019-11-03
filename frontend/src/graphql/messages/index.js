@@ -38,9 +38,13 @@ export const GET_MESSAGES = gql`
 				counter
 				users
 			}
-			file
+			file {
+				url
+				format
+			}
 			createdBy {
 				username
+				id
 			}
 			createdAt
 			updatedBy {
@@ -89,7 +93,10 @@ export const CREATE_MESSAGE = gql`
 				counter
 				users
 			}
-			file
+			file {
+				url
+				format
+			}
 			createdBy {
 				username
 			}
@@ -109,7 +116,15 @@ export const DELETE_MESSAGE = gql`
 `
 
 export const UPDATE_MESSAGE = gql`
-	mutation UPDATE_MESSAGE($id: ID!, $content: String, $tags: [String!], $file: String) {
+	mutation UPDATE_MESSAGE($id: ID!, $content: String, $tags: [String!], $file: FileInput) {
 		updateMessage(id: $id, content: $content, tags: $tags, file: $file)
+	}
+`
+
+export const MESSAGE_SUBSCRIPTION = gql`
+	subscription MESSAGES_SUBSCRIPTION($id: ID!) {
+		newMessage(id: $id) {
+			content
+		}
 	}
 `

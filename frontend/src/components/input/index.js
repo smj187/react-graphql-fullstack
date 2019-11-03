@@ -22,7 +22,7 @@ const Label = styled.label`
 
 	color: ${({ theme, hasError }) => (hasError ? theme.red2 : theme.color4)};
 `
-const Input = styled.input`
+export const Input = styled.input`
 	outline: none;
 	border: none;
 	resize: none;

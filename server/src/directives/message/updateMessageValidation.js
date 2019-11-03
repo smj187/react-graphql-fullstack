@@ -8,12 +8,12 @@ class UpdateMessageValidation extends SchemaDirectiveVisitor {
 	visitFieldDefinition(field) {
 		const { resolve = defaultFieldResolver } = field
 		field.resolve = async function(root, args, context, info) {
-			const { messageId, content, tags, file } = args
+			const { id, content, tags, file } = args
 
 			const errors = {}
-			const message = await Message.findById(messageId)
+			const message = await Message.findById(id)
 			if (!message) {
-				errors.message = `Could not find message ${messageId}`
+				errors.message = `Could not find message ${id}`
 			}
 
 			if (Object.keys(errors).length > 0) {

@@ -1,6 +1,5 @@
 import styled, { css } from "styled-components"
 import { Link } from "react-router-dom"
-import { Icon } from "../../../components"
 
 export const Container = styled.div`
 	display: flex;
@@ -27,6 +26,7 @@ export const LogoWrapper = styled.div`
 	align-items: center;
 	justify-content: center;
 	margin-top: 2rem;
+	margin-bottom: 1.5rem;
 `
 
 export const ProfileWrapper = styled.div`
@@ -78,44 +78,13 @@ export const Image = styled.img`
 	margin-top: 2rem;
 `
 
-export const TabWrapper = styled.div`
-	height: 5rem;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-top: 2rem;
-`
-export const Tab = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	cursor: pointer;
-	text-align: center;
-	margin: 0.5rem;
-	padding: 0.25rem 0.5rem;
-	padding-bottom: 0.35rem;
-	border-bottom: 2px solid ${({ theme, active }) => (active ? theme.purple1 : "transparent")};
-	color: ${({ theme, active }) => (active ? theme.color2 : theme.color5)};
-
-	> :first-child {
-		margin-right: 0.5rem;
-		color: ${({ theme, active }) => (active ? theme.color2 : theme.color5)};
-	}
-
-	> :last-child {
-		font-size: 1.25rem;
-	}
-`
-
 export const ChannelWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 	overflow-x: hidden;
 	overflow-y: scroll;
-	height: calc(100vh - 5rem - 8rem - 4.25rem);
+	height: calc(100vh - 8rem - 4.25rem);
 
 	:hover {
 		::-webkit-scrollbar-thumb {

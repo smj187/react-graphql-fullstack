@@ -51,6 +51,7 @@ const Initial = styled.span`
 
 export const Avatar = ({ avatar, size = 80, name = " ", notClickable = false, ...rest }) => {
 	const background = () => {
+		if (!name) return "#5C2D91"
 		let sum = 0
 		for (let i = 0; i < name.length; i++) {
 			sum += name.charCodeAt(i)
@@ -61,7 +62,7 @@ export const Avatar = ({ avatar, size = 80, name = " ", notClickable = false, ..
 	const image = img => (typeof img === "object" ? window.URL.createObjectURL(img) : img)
 
 	const initial = name => {
-		if (!name) return "#"
+		if (!name) return "?"
 		return name.trim().length > 0 && name[0].toUpperCase()
 	}
 

@@ -41,7 +41,9 @@ export const Navbar = styled.div`
 export const ChatWindow = styled.div`
 	display: flex;
 	flex-direction: column;
-
+	overflow-x: hidden;
+	overflow-y: scroll;
+	max-height: calc(100vh - 5rem - 5rem);
 	flex: 1;
 `
 
@@ -60,9 +62,51 @@ export const Empty = styled.div`
 	}
 `
 
-export const FileWrapper = styled.div``
+export const FileWrapper = styled.div`
+	height: 12.5rem;
+	${({ isVideo }) =>
+		isVideo &&
+		css`
+			height: 17rem;
+		`};
+
+	${({ isAudio }) =>
+		isAudio &&
+		css`
+			height: 5rem;
+		`};
+`
 
 export const Image = styled.img`
+	max-width: 100%;
+	max-height: 100%;
+
+	border-radius: 0.25rem;
+	cursor: pointer;
+`
+
+export const Video = styled.video`
+	margin-top: 1rem;
+`
+
+export const Audio = styled.audio`
+	margin-top: 0.5rem;
+`
+
+export const Document = styled.div`
+	padding: 0.65rem;
+	border: 1px solid ${({ theme }) => theme.color5};
+	border-radius: 0.25rem;
+	width: fit-content;
+	margin-top: 0.5rem;
+
+	> :first-child {
+		color: ${({ theme }) => theme.color3};
+		cursor: pointer;
+	}
+`
+
+export const EmptyImage = styled.img`
 	height: 10vh;
 `
 
@@ -71,17 +115,37 @@ export const Message = styled.div`
 	grid-template-columns: 6rem auto 5rem;
 	border-left: 5px solid ${({ theme, isEditing }) => (isEditing ? theme.red1 : "transparent")};
 	padding-top: 1.25rem;
-	padding-bottom: 1.5rem;
+	margin: 0.5rem 1.5rem 0.5rem 1.5rem;
+	padding-bottom: 1rem;
+
+	${({ isLast }) =>
+		isLast &&
+		css`
+			border-bottom: 1px solid none;
+		`};
+
+	${({ isFirst }) =>
+		isFirst &&
+		css`
+			border-bottom: 1px solid none;
+		`};
+
+	${({ isFirst, isLast }) =>
+		!isFirst &&
+		!isLast &&
+		css`
+			border-bottom: 1px solid ${({ theme }) => theme.shadow1};
+		`};
 
 	> :first-child {
 		grid-column: 1;
-		grid-row: 1 / 5;
+		grid-row: 1 / 6;
 		margin: 0 auto;
 	}
 
 	> :nth-child(3) {
 		grid-column: 3;
-		grid-row: 1/5;
+		grid-row: 1 / 6;
 		margin-top: 0.5rem;
 		margin-bottom: auto;
 		visibility: hidden;
@@ -90,6 +154,8 @@ export const Message = styled.div`
 	> :nth-child(4) {
 		margin-top: 0.5rem;
 		font-size: 1.1rem;
+		display: flex;
+		align-items: center;
 	}
 
 	:hover {
@@ -145,20 +211,21 @@ export const StyledIcon = styled(Icon)`
 
 export const TagWrapper = styled.div`
 	display: flex;
-	margin-top: 0.25rem;
+	margin: 0.25rem 0 0.5rem 0;
 
 	${({ isEditing }) =>
 		isEditing === true &&
 		css`
-			margin-top: 0.5rem;
+			margin-top: 0.75rem;
 		`};
 `
 
 export const Tag = styled.div`
 	cursor: pointer;
+
 	> :first-child {
 		padding: 0.15rem 0.2rem;
-		font-size: 1.05rem;
+		font-size: 1.1rem;
 
 		:hover {
 			text-decoration: underline;
@@ -173,6 +240,11 @@ export const Tag = styled.div`
 					border-radius: 0.25rem;
 					display: flex;
 					align-items: center;
+
+					> :first-child {
+						color: ${({ theme }) => theme.color4};
+					}
+
 					> :nth-child(2) {
 						color: ${({ theme }) => theme.red1};
 					}
@@ -191,12 +263,13 @@ export const Tag = styled.div`
 `
 
 export const EditMenu = styled.div`
-	height: 5rem;
+	height: auto;
 	width: 100%;
 	margin-top: auto;
 	display: flex;
 	justify-content: flex-end;
 	align-items: flex-end;
+	margin: 1.5rem 0;
 
 	button {
 		height: auto;
@@ -215,4 +288,11 @@ export const EditMenu = styled.div`
 export const FileWrapper1 = styled.div`
 	max-height: 10rem;
 	border: 1px solid red;
+`
+
+export const Updated = styled.span`
+	font-size: 0.75rem;
+	color: ${({ theme }) => theme.color4};
+	margin-left: 0.25rem;
+	cursor: pointer;
 `

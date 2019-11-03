@@ -12,7 +12,7 @@ export default gql`
 			@createMessageValidation
 			@auth
 
-		updateMessage(id: ID!, content: String, tags: [String!], file: String): Message!
+		updateMessage(id: ID!, content: String, tags: [String!], file: FileInput): Boolean!
 			@updateMessageValidation
 			@restricted
 			@auth
@@ -25,12 +25,22 @@ export default gql`
 	}
 
 	extend type Subscription {
-		newMessage(id: ID!): Message! @restricted @auth
+		newMessage(id: ID!): Message! @auth
 	}
 
 	type Reaction {
 		counter: Int
 		users: [String!]
+	}
+
+	input FileInput {
+		url: String
+		format: String
+	}
+
+	type File {
+		url: String
+		format: String
 	}
 
 	type Message {
@@ -46,7 +56,7 @@ export default gql`
 		cheer: Reaction
 		rocket: Reaction
 		eyes: Reaction
-		file: String
+		file: File
 		createdBy: User
 		createdAt: Date
 		updatedBy: User

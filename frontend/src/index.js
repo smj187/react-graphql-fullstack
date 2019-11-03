@@ -13,8 +13,10 @@ import ApolloClient from "apollo-client"
 import { ApolloProvider } from "@apollo/react-hooks"
 import { InMemoryCache } from "apollo-cache-inmemory"
 import { ApolloLink } from "apollo-link"
-import { onError } from "apollo-link-error"
 import { createUploadLink } from "apollo-upload-client"
+import { WebSocketLink } from "apollo-link-ws"
+import { split } from "apollo-link"
+import { getMainDefinition } from "apollo-utilities"
 
 // STYLED COMPONENTS
 const StyledComponents = () => (
@@ -33,31 +35,42 @@ const Auth = () => (
 	</ProvideAuth>
 )
 
-// APOLLO
-
-const authLink = new ApolloLink((operation, forward) => {
-	const token = localStorage.getItem("token")
-
-	operation.setContext({
-		headers: {
-			authorization: token ? `Bearer ${token}` : ""
-		}
-	})
-
-	return forward(operation)
+const wsLink = new WebSocketLink({
+	uri: `ws://localhost:5000/graphql`,
+	options: {
+		reconnect: true
+	}
 })
 
-const client = new ApolloClient({
-	link: ApolloLink.from([
-		onError(({ graphQLErrors }) => {
-			// console.log("error", graphQLErrors[0])
-		}),
-		authLink,
-		createUploadLink({
-			uri: "http://localhost:5000/graphql",
-			credentials: "same-origin"
+const queryMutationLink = ApolloLink.from([
+	new ApolloLink((operation, forward) => {
+		const token = localStorage.getItem("token")
+
+		operation.setContext({
+			headers: {
+				authorization: token ? `Bearer ${token}` : ""
+			}
 		})
-	]),
+
+		return forward(operation)
+	}),
+	createUploadLink({
+		uri: "http://localhost:5000/graphql",
+		credentials: "same-origin"
+	})
+])
+
+const link = split(
+	({ query }) => {
+		const definition = getMainDefinition(query)
+		return definition.kind === "OperationDefinition" && definition.operation === "subscription"
+	},
+	wsLink,
+	queryMutationLink
+)
+
+const client = new ApolloClient({
+	link: link,
 	cache: new InMemoryCache()
 })
 
