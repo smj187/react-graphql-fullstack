@@ -13,6 +13,7 @@ export default {
 		publicChannels: async (parent, args, context, info) => {
 			console.time()
 			const channels = await Channel.find({ isPrivate: null }).sort({ position: "ascending" })
+			return channels
 
 			const asyncFunc = async channel => {
 				let message = null
@@ -41,6 +42,11 @@ export default {
 			return await Channel.findById(id)
 				.populate("createdBy")
 				.populate("updatedBy")
+				.populate("users")
+		},
+
+		privateChannel: async (parent, { id }, context, info) => {
+			return await Channel.findById(id).populate("users")
 		}
 	},
 
@@ -96,14 +102,19 @@ export default {
 			const isPrivate = true
 			const users = [user.id, partner._id]
 			const createdBy = user.id
-			const channel = await Channel.create({ isPrivate, users, createdBy })
+			return await Channel.create({ isPrivate, users, createdBy }).then(r =>
+				r
+					.populate("users")
+					.populate("createdBy")
+					.execPopulate()
+			)
 
-			const created = await Channel.findById({ _id: channel._id })
-				.populate("users")
-				.populate("createdBy")
-			pubsub.publish("NEW_CHANNEL", { newChannel: created, userId: partner._id })
+			// const created = await Channel.findById({ _id: channel._id })
+			// 	.populate("users")
+			// 	.populate("createdBy")
+			// pubsub.publish("NEW_CHANNEL", { newChannel: created, userId: partner._id })
 
-			return true
+			// return true
 		},
 
 		addToPrivateChannel: async (parent, { channelId, userId }, context, info) => {

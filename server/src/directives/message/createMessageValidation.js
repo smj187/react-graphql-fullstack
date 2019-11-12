@@ -88,16 +88,16 @@ class CreateMessageValidation extends SchemaDirectiveVisitor {
 					}
 				} else {
 					type = "document"
-					if (!mimetype.includes("application/") && !mimetype.includes("text/")) {
-						errors.file = `Invalid file format: ${mimetype}`
-					}
+					console.log("file:", mimetype)
+					// if (!mimetype.includes("application/") && !mimetype.includes("text/")) {
+					// 	errors.file = `Invalid file format: ${mimetype}`
+					// }
 
 					if (filesize > document * 1000) {
 						errors.file = `Document size is too big. Limit: ${document} kb`
 					}
 				}
 			}
-			console.log(errors)
 
 			if (Object.keys(errors).length > 0) {
 				throw new ApolloError("Server Validation", { errors })

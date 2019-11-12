@@ -26,9 +26,8 @@ class RestrictionDirective extends SchemaDirectiveVisitor {
 			const isDeleteMessage = info.path.key === "deleteMessage"
 			const isUpdateMessage = info.path.key === "updateMessage"
 			const isPrivateMessage = info.path.key === "messages"
-			const isSubscription = info.path.key === "newMessage"
 
-			if (isPrivateMessage || isSubscription) {
+			if (isPrivateMessage) {
 				const channel = await Channel.findById(args.id)
 				if (!channel) {
 					throw new ApolloError(`Could not find chanenl ${args.id}`)

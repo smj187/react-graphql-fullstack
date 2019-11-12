@@ -4,8 +4,9 @@ export default gql`
 	extend type Query {
 		channels: [PublicChannel!]! @auth
 		publicChannels: [Channel]! @auth
-		channel(id: ID!): PublicChannel! @auth
+		channel(id: ID): Channel! @auth
 
+		privateChannel(id: ID!): PrivateChannel! @channelIdValidation @auth
 		privateChannels: [PrivateChannel!]! @auth
 	}
 
@@ -21,7 +22,7 @@ export default gql`
 			@auth
 		deleteChannel(id: ID!): Boolean! @restricted @auth
 
-		createPrivateChannel(partnerId: ID!): Boolean! @createPrivateChannelValidation @auth
+		createPrivateChannel(partnerId: ID!): PrivateChannel! @createPrivateChannelValidation @auth
 		addToPrivateChannel(channelId: ID!, userId: ID!): Boolean!
 			@restricted
 			@addUserToChannelValidation
@@ -45,19 +46,24 @@ export default gql`
 	}
 
 	type Channel {
-		id: String
+		id: ID
 		name: String
 		avatar: String
-		content: String
-		createdBy: String
+		isLocked: Boolean
+		position: Int
+		users: [User!]
+		createdAt: Date
+		createdBy: User
+		updatedAt: Date
+		updatedBy: User
 	}
 
 	type PrivateChannel {
-		id: ID!
-		isPrivate: Boolean!
-		users: [User!]!
-		createdAt: Date!
-		createdBy: User!
+		id: ID
+		isPrivate: Boolean
+		users: [User!]
+		createdAt: Date
+		createdBy: User
 	}
 
 	type PublicChannel {
@@ -67,7 +73,7 @@ export default gql`
 		isLocked: Boolean!
 		position: Int!
 		createdAt: Date!
-		createdBy: User!
+		createdBy: User
 		updatedAt: Date
 		updatedBy: User
 	}

@@ -4,6 +4,7 @@ import styled from "styled-components"
 import { Group } from "styled-icons/material/Group"
 import { Conversation } from "styled-icons/boxicons-solid/Conversation"
 import { UserPlus } from "styled-icons/boxicons-solid/UserPlus"
+import { UserX } from "styled-icons/boxicons-solid/UserX"
 import { Slider } from "styled-icons/boxicons-regular/Slider"
 import { AccountBox } from "styled-icons/remix-fill/AccountBox"
 import { SignOutAlt } from "styled-icons/fa-solid/SignOutAlt"
@@ -40,7 +41,13 @@ import { FileVideo } from "styled-icons/fa-solid/FileVideo"
 import { FileAudio } from "styled-icons/fa-regular/FileAudio"
 import { File } from "styled-icons/boxicons-solid/File"
 import { FileImage } from "styled-icons/boxicons-solid/FileImage"
+import { FileDownload } from "styled-icons/fa-solid/FileDownload"
 import { Plus } from "styled-icons/octicons/Plus"
+import { GroupAdd } from "styled-icons/material/GroupAdd"
+import { MessageDots } from "styled-icons/boxicons-solid/MessageDots"
+import { FileUpload } from "styled-icons/fa-solid/FileUpload"
+import { ChatBubble } from "styled-icons/material/ChatBubble"
+import { ErrorWarning } from "styled-icons/remix-line/ErrorWarning"
 
 // styled-icons/fa-regular/AddressCard
 
@@ -52,7 +59,12 @@ export const Icon = ({ name, size = 16, ...rest }) => (
 	<Container {...rest}>
 		{(name === "Group" && <Group size={size} />) ||
 			(name === "Conversation" && <Conversation size={size} />) ||
+			(name === "FileDownload" && <FileDownload size={size} />) ||
 			(name === "UserPlus" && <UserPlus size={size} />) ||
+			(name === "ErrorWarning" && <ErrorWarning size={size} />) ||
+			(name === "FileUpload" && <FileUpload size={size} />) ||
+			(name === "ChatBubble" && <ChatBubble size={size} />) ||
+			(name === "UserX" && <UserX size={size} />) ||
 			(name === "Slider" && <Slider size={size} />) ||
 			(name === "AccountBox" && <AccountBox size={size} />) ||
 			(name === "SignOutAlt" && <SignOutAlt size={size} />) ||
@@ -83,6 +95,8 @@ export const Icon = ({ name, size = 16, ...rest }) => (
 			(name === "FileAudio" && <FileAudio size={size} />) ||
 			(name === "FileImage" && <FileImage size={size} />) ||
 			(name === "Plus" && <Plus size={size} />) ||
+			(name === "GroupAdd" && <GroupAdd size={size} />) ||
+			(name === "MessageDots" && <MessageDots size={size} />) ||
 			(name === "SignInAlt" && <SignInAlt size={size} />)}
 	</Container>
 )

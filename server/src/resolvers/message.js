@@ -23,6 +23,9 @@ export default {
 				if (message._doc.eyes.counter === 0) delete message._doc.eyes
 				return { ...message._doc, id: message._id }
 			})
+		},
+		message: async (parent, { id }, content, info) => {
+			return await Message.findById(id).populate("createdBy")
 		}
 	},
 	Mutation: {
@@ -36,52 +39,37 @@ export default {
 			console.time()
 			const { id, content, tags, stream, type } = args
 			const { user, pubsub } = context
+			const message = await Message.create({
+				channelId: id,
+				content,
+				tags,
+				createdBy: user.id
+			}).then(message => message.populate("createdBy").execPopulate())
 
-			console.log("createMessage:", content, tags, type)
-
-			// create the message
-			const createdBy = user.id
-			let file = null
-
+			// add file to message
 			if (stream) {
-				console.log("stream")
-				file = {
-					url: await upload(stream, "messages/", type),
-					format: type
-				}
+				// upload(stream, "messages/", type).then(() => console.log("done"))
+				const url = await upload(stream, "messages/", type)
+				const query = { _id: message.id }
+				const update = { $set: { file: { url, format: type } } }
+				const options = { new: true, useFindAndModify: false }
+				const file = await Message.findByIdAndUpdate(query, update, options).then(message =>
+					message.populate("createdBy").execPopulate()
+				)
+				pubsub.publish("NEW_MESSAGE", { newMessage: file })
+				return file
+			} else {
+				pubsub.publish("NEW_MESSAGE", { newMessage: message })
 			}
-			const create = { channelId: id, content, tags, file, createdBy }
-			Object.keys(create).forEach(key => create[key] == null && delete create[key])
-			const message = await Message.create(create)
-
-			// push message to channel
-			const channelQuery = { _id: id }
-			const push = { $set: { messages: message } }
-			const options = { new: true, useFindAndModify: false }
-			Channel.findByIdAndUpdate(channelQuery, push, options).exec()
-
-			// tell pubsub a new message has arived
-			Message.findById({ _id: message._id })
-				.populate("createdBy")
-				.exec((_, createdMessage) => {
-					if (createdMessage) {
-						pubsub.publish("NEW_MESSAGE", {
-							newMessage: createdMessage,
-							id: id
-						})
-					}
-				})
-
 			console.timeEnd()
 			return message
 		},
-		updateMessage: async (parent, { id, content, tags, file }, { user }, info) => {
+		updateMessage: async (parent, { id, content, tags }, { user }, info) => {
 			const updatedBy = user.id
 			const updatedAt = Date.now()
-			console.log("update,", id, content, tags, file)
 
 			const query = { _id: id }
-			const update = { $set: { content, tags, file, updatedBy, updatedAt } }
+			const update = { $set: { content, tags, updatedBy, updatedAt } }
 			const options = { new: true, useFindAndModify: false }
 			await Message.findByIdAndUpdate(query, update, options)
 			return true
@@ -166,17 +154,46 @@ export default {
 	Subscription: {
 		newMessage: {
 			subscribe: withFilter(
-				(parent, args, { pubsub, user }, info) => {
-					// console.log("@auth?", pubsub)
-
-					return pubsub.asyncIterator("NEW_MESSAGE")
-				},
-				(payload, variables) => {
-					// console.log("PAYLOAD-->", payload)
-
-					return payload.id === variables.id
-				}
+				(parent, args, { pubsub }, info) => pubsub.asyncIterator("NEW_MESSAGE"),
+				({ newMessage }, { id }) => newMessage.channelId.equals(id)
 			)
 		}
 	}
 }
+
+// // create the message
+// const createdBy = user.id
+// let file = null
+
+// if (stream) {
+// 	file = {
+// 		url: await upload(stream, "messages/", type),
+// 		format: type
+// 	}
+// }
+// const create = { channelId: id, content, tags, file, createdBy }
+// Object.keys(create).forEach(key => create[key] == null && delete create[key])
+// const message = await Message.create(create).then(message =>
+// 	message.populate("createdBy").execPopulate()
+// )
+
+// // push message to channel
+// const channelQuery = { _id: id }
+// const push = { $set: { messages: message } }
+// const options = { new: true, useFindAndModify: false }
+// Channel.findByIdAndUpdate(channelQuery, push, options).exec()
+
+// // tell pubsub a new message has arived
+// Message.findById({ _id: message._id })
+// 	.populate("createdBy")
+// 	.exec((_, createdMessage) => {
+// 		if (createdMessage) {
+// 			pubsub.publish("NEW_MESSAGE", {
+// 				newMessage: createdMessage,
+// 				id: id
+// 			})
+// 		}
+// 	})
+
+// console.timeEnd()
+// return message

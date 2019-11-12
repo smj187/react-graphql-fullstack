@@ -1,5 +1,60 @@
 import gql from "graphql-tag"
 
+export const COMMUNITY_CHANNELS = gql`
+	query COMMUNITY_CHANNELS {
+		channels {
+			id
+			name
+			isLocked
+			avatar
+		}
+	}
+`
+
+export const COMMUNITY_CHANNEL = gql`
+	query COMMUNITY_CHANNEL($id: ID!) {
+		channel(id: $id) {
+			id
+			name
+			isLocked
+			avatar
+		}
+	}
+`
+
+export const PRIVATE_CHANNELS = gql`
+	query PRIVATE_CHANNELS {
+		privateChannels {
+			id
+			isPrivate
+			users {
+				username
+			}
+			createdAt
+			createdBy {
+				username
+			}
+		}
+	}
+`
+
+export const PRIVATE_CHANNEL = gql`
+	query PRIVATE_CHANNEL($id: ID!) {
+		channel(id: $id) {
+			id
+			users {
+				id
+				username
+			}
+			createdAt
+			createdBy {
+				id
+				username
+			}
+		}
+	}
+`
+
 export const GET_CHANNELS = gql`
 	query GET_CHANNELS {
 		channels {
@@ -64,14 +119,36 @@ export const REORDER_CHANNELS = gql`
 	}
 `
 
-export const GET_PUBLIC_CHANNELS = gql`
-	query GET_PUBLIC_CHANNELS {
-		publicChannels {
+export const ADD_TO_PRIVATE_CHANNEL = gql`
+	mutation ADD_TO_PRIVATE_CHANNEL($channelId: ID!, $userId: ID!) {
+		addToPrivateChannel(channelId: $channelId, userId: $userId)
+	}
+`
+
+export const REMOVE_FROM_PRIVATE_CHANNEL = gql`
+	mutation REMOVE_FROM_PRIVATE_CHANNEL($channelId: ID!, $userId: ID!) {
+		removeFromPrivateChannel(channelId: $channelId, userId: $userId)
+	}
+`
+
+export const CREATE_PRIVATE_CHANNEL = gql`
+	mutation ADD_TO_PRIVATE($id: ID!) {
+		createPrivateChannel(partnerId: $id) {
 			id
-			name
-			avatar
-			content
-			createdBy
+			createdAt
+			createdBy {
+				id
+				username
+			}
+			users {
+				id
+				username
+			}
 		}
+	}
+`
+export const DELETE_PRIVATE_CHANNEL = gql`
+	mutation DELETE_PRIVATE_CHANNEL($id: ID!) {
+		deletePrivateChannel(channelId: $id)
 	}
 `

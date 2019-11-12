@@ -1,5 +1,8 @@
 import "dotenv/config"
-import { ApolloServer, PubSub } from "apollo-server-express"
+import { ApolloServer, PubSub, makeExecutableSchema } from "apollo-server-express"
+import { execute, subscribe } from "graphql"
+import { SubscriptionServer } from "subscriptions-transport-ws"
+import { createServer } from "http"
 
 import mongoose from "mongoose"
 import express from "express"
@@ -13,10 +16,31 @@ import schemaDirectives from "./directives"
 
 const app = express()
 const pubsub = new PubSub()
+
 const server = new ApolloServer({
 	typeDefs: schema,
 	resolvers,
 	schemaDirectives,
+
+	subscriptions: {
+		path: "/subscriptions",
+		onConnect: async req => {
+			// console.log("async rec", req)
+
+			let user = null
+			const token = req.authorization.replace("Bearer ", "")
+			try {
+				user = jwt.verify(token, process.env.JWT_SECRET)
+			} catch (e) {}
+
+			return { user }
+
+			// if (!context.user) {
+			// 	throw new AuthenticationError("Invalid/Expired token. Please sign in again.")
+			// }
+		}
+	},
+
 	context: async ({ req, connection }) => {
 		let user = null
 		if (connection) {
@@ -26,6 +50,7 @@ const server = new ApolloServer({
 					user = jwt.verify(token, process.env.JWT_SECRET)
 				} catch (e) {}
 			}
+
 			return { connection, user, pubsub }
 		}
 		if (req) {
@@ -45,6 +70,7 @@ const server = new ApolloServer({
 		console.log("----------------------------")
 		console.log(error)
 		console.log(error.extensions.exception)
+		return error
 
 		error.extensions["id"] = id
 		delete error.extensions.exception
@@ -76,6 +102,20 @@ if (process.env.IS_TEST) {
 
 mongoose.connect(databaseUrl, { useUnifiedTopology: true, useNewUrlParser: true }).then(() => {
 	httpServer.listen({ port: process.env.SERVER_PORT }, () => {
+		// new SubscriptionServer(
+		// 	{
+		// 		execute,
+		// 		subscribe,
+		// 		schema,
+		// 		onConnect: async params => {
+		// 			console.log("onConnect")
+		// 		}
+		// 	},
+		// 	{
+		// 		server: server,
+		// 		path: "/subscriptions"
+		// 	}
+		// )
 		console.log(`Server running at http://localhost:${process.env.SERVER_PORT}/graphql`)
 	})
 })

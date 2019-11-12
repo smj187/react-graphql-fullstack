@@ -10,6 +10,7 @@ const linkSchema = gql`
 	directive @auth on FIELD_DEFINITION
 	directive @restricted(to: [Role]) on FIELD_DEFINITION
 	directive @sensitive on FIELD_DEFINITION
+	directive @subscription on FIELD_DEFINITION
 	directive @skip(if: Boolean!) on FIELD_DEFINITION | FRAGMENT_SPREAD | INLINE_FRAGMENT
 
 	directive @signUpValidation on FIELD_DEFINITION
@@ -19,6 +20,7 @@ const linkSchema = gql`
 	directive @resetMailValidation on FIELD_DEFINITION
 	directive @inviteMailValidation on FIELD_DEFINITION
 
+	directive @channelIdValidation on FIELD_DEFINITION
 	directive @createChannelValidation on FIELD_DEFINITION
 	directive @reorderChannelsValidation on FIELD_DEFINITION
 	directive @updateChannelValidation on FIELD_DEFINITION

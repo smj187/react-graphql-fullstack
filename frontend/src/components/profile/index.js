@@ -4,7 +4,7 @@ import ReactResponsiveModal from "react-responsive-modal"
 import { useQuery } from "@apollo/react-hooks"
 
 import { GET_USER } from "../../graphql"
-import { Avatar, H2, Span, Spinner } from "../index"
+import { Avatar, H2, Span, Spinner, Button } from "../index"
 
 const Container = styled.div`
 	margin: -1.2rem;
@@ -35,6 +35,10 @@ const Wrapper = styled.div`
 		> :nth-child(3) {
 			margin-top: 0.25rem;
 			width: auto;
+			overflow: hidden;
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
 		}
 	}
 
@@ -50,6 +54,10 @@ const Wrapper = styled.div`
 		font-size: 1.2rem;
 		margin-bottom: 1rem;
 	}
+
+	> :nth-child(8) {
+		max-width: 14.5rem;
+	}
 `
 
 const Error = styled.div`
@@ -58,7 +66,7 @@ const Error = styled.div`
 	color: ${({ theme }) => theme.red1};
 `
 
-export const Profile = ({ userId, isOpen, onClose }) => {
+export const Profile = ({ userId, isOpen, onClose, showMessageButton, onOpenChat }) => {
 	const { data } = useQuery(GET_USER, {
 		variables: { id: userId },
 		skip: !userId || userId === -1
@@ -98,6 +106,16 @@ export const Profile = ({ userId, isOpen, onClose }) => {
 						<Span>{new Date(data.user.createdAt).toLocaleString()}</Span>
 						<H2>Contact</H2>
 						<Span>{data.user.email}</Span>
+						{showMessageButton && (
+							<Button
+								onClick={() => {
+									onOpenChat()
+									onClose()
+								}}
+							>
+								Start Conversation
+							</Button>
+						)}
 					</Wrapper>
 				)}
 			</Container>

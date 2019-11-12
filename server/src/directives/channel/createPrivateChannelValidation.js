@@ -26,24 +26,22 @@ class CreatePrivateChannelValidation extends SchemaDirectiveVisitor {
 			}
 
 			// const channel = await Channel.findOne({ users: { $in: [partnerId] } })
-			const channels = await Channel.find({
-				users: { $size: 2 },
-				$or: [
-					{
-						createdBy: user.id
-					},
-					{ createdBy: partnerId }
-				]
-			})
-			if (channels.length > 0) {
-				errors.partnerId = `Private channel already exists`
-			}
+			// const channels = await Channel.find({
+			// 	users: { $size: 2 },
+			// 	$or: [
+			// 		{
+			// 			createdBy: user.id
+			// 		},
+			// 		{ createdBy: partnerId }
+			// 	]
+			// })
+			// if (channels.length > 0) {
+			// 	errors.partnerId = `Private channel already exists`
+			// }
 
 			if (Object.keys(errors).length > 0) {
 				throw new ApolloError("Server Validation", { errors })
 			}
-
-			console.log("CreatePrivateChannelValidation")
 
 			return await resolve.call(this, root, { ...args, partner }, context, info)
 		}

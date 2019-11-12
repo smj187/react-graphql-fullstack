@@ -3,6 +3,7 @@ import { gql } from "apollo-server"
 export default gql`
 	extend type Query {
 		messages(id: ID!, pageSize: Int, page: Int): [Message!]! @restricted @auth
+		message(id: ID!): Message! @restricted @auth
 	}
 
 	extend type Mutation {
@@ -12,20 +13,17 @@ export default gql`
 			@createMessageValidation
 			@auth
 
-		updateMessage(id: ID!, content: String, tags: [String!], file: FileInput): Boolean!
+		updateMessage(id: ID!, content: String, tags: [String!]): Boolean!
 			@updateMessageValidation
 			@restricted
 			@auth
 
 		reactToMessage(id: ID!, reaction: String!): Message! @reactionValidation @restricted @auth
-
 		deleteMessage(id: ID!): Boolean! @restricted @auth
-
 		clearOutChannel(id: ID!): Boolean! @auth
 	}
-
 	extend type Subscription {
-		newMessage(id: ID!): Message! @auth
+		newMessage(id: ID!): Message! @subscription
 	}
 
 	type Reaction {
@@ -45,6 +43,7 @@ export default gql`
 
 	type Message {
 		id: ID!
+		isPrivate: Boolean
 		channelId: String
 		content: String
 		tags: [String!]

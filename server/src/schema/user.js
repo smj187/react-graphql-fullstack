@@ -2,7 +2,7 @@ import { gql } from "apollo-server"
 
 export default gql`
 	extend type Query {
-		users(pageSize: Int, page: Int): [User!]! @restricted @auth
+		users(pageSize: Int, page: Int): [User!]! @auth
 		user(id: ID!): UserProfile! @auth
 	}
 

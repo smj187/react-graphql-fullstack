@@ -1,5 +1,15 @@
 import gql from "graphql-tag"
 
+export const USERS = gql`
+	query USERS {
+		users(pageSize: 999, page: 0) {
+			id
+			avatar
+			username
+		}
+	}
+`
+
 export const INVITE_FRIEND = gql`
 	mutation SEND_INVITE_MAIL($email: String!) {
 		inviteUserMail(email: $email)
@@ -32,6 +42,7 @@ export const GET_USERS = gql`
 export const GET_USER = gql`
 	query GET_USER($id: ID!) {
 		user(id: $id) {
+			id
 			username
 			avatar
 			firstname

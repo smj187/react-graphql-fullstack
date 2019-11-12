@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import { Icon } from "../icon"
 
 const Container = styled.div`
 	display: flex;
@@ -49,7 +50,14 @@ const Initial = styled.span`
 	font-size: ${({ font }) => `${(+font - 5) / 2}px`};
 `
 
-export const Avatar = ({ avatar, size = 80, name = " ", notClickable = false, ...rest }) => {
+export const Avatar = ({
+	avatar,
+	size = 80,
+	name = " ",
+	notClickable = false,
+	isPrivate = false,
+	...rest
+}) => {
 	const background = () => {
 		if (!name) return "#5C2D91"
 		let sum = 0
@@ -64,6 +72,22 @@ export const Avatar = ({ avatar, size = 80, name = " ", notClickable = false, ..
 	const initial = name => {
 		if (!name) return "?"
 		return name.trim().length > 0 && name[0].toUpperCase()
+	}
+
+	if (isPrivate) {
+		return (
+			<Container
+				size={size}
+				hasAvatar={!!avatar}
+				background={background}
+				notClickable={notClickable}
+				{...rest}
+			>
+				<Initial font={size}>
+					<Icon name="Group" />
+				</Initial>
+			</Container>
+		)
 	}
 
 	return (
